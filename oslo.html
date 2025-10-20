@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oslo - 3 Napos Kirándulás Tervező</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Inter Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f9fb; /* Light background for modern feel */
+        }
+        .active-card {
+            background-color: #e0f2fe !important; /* light blue */
+            border-left: 4px solid #005f73; /* Dark teal accent */
+        }
+        /* Custom scrollbar style for better aesthetics */
+        .custom-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+
+    <div id="app" class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
+        <header class="mb-8 p-4 bg-white shadow-lg rounded-xl">
+            <h1 class="text-4xl font-extrabold text-[#005f73] tracking-tight">
+                Osloi Kaland: 3 Napos Útiterv
+            </h1>
+            <p class="mt-2 text-lg text-gray-600">
+                Jó szórakozást!
+            </p>
+        </header>
+
+        <!-- Main Layout: Sidebar and Content Area -->
+        <div class="lg:flex lg:space-x-8">
+
+            <!-- 1. Sidebar: Location List (Responsive: Full width on mobile, 1/3 on desktop) -->
+            <aside class="lg:w-1/3 mb-6 lg:mb-0">
+                <div class="bg-white p-4 rounded-xl shadow-lg custom-scroll max-h-[80vh] overflow-y-auto">
+                    <h2 class="text-2xl font-semibold mb-2 text-gray-800 border-b pb-2">Látnivalók csoportosítva</h2>
+                    <div id="location-list">
+                        <!-- Location cards will be inserted here by JavaScript -->
+                    </div>
+                </div>
+            </aside>
+
+            <!-- 2. Main Content: Details and Map Link (Responsive: Full width on mobile, 2/3 on desktop) -->
+            <main class="lg:w-2/3">
+                <div class="bg-white p-6 rounded-xl shadow-lg h-full">
+                    <div id="detail-view">
+                        <h2 class="text-3xl font-bold text-gray-900 mb-4">Üdvözlünk Oslóban!</h2>
+                        <p class="text-gray-700 leading-relaxed">
+                            Válassz egy helyszínt a bal oldali listából (mobilon felül), hogy megtekintsd az érdekességeket, a megközelítési információkat és a profi tippeket!
+                        </p>
+                        <!-- Initial Map Placeholder (Simplified and smaller) -->
+                        <div class="mt-8">
+                            <h3 class="text-xl font-semibold text-[#005f73] mb-3">Helyszínkereső</h3>
+                            <div class="bg-gray-100 border border-gray-300 rounded-lg p-6 flex flex-col items-center justify-center text-center">
+                                <!-- Removed h-64 fixed height -->
+                                <svg class="w-10 h-10 text-gray-500 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                </svg>
+                                <p class="text-gray-600 mb-3 text-sm">
+                                    Kattints egy helyszínre, és megnyithatod a Google Térképen!
+                                </p>
+                                <a href="https://www.google.com/maps/search/Oslo+látnivalók" target="_blank" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-full shadow-sm text-white bg-[#005f73] hover:bg-[#004d60] transition">
+                                    Összes látnivaló Térképen
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // Adatstruktúra az Oslói helyszínekhez, szigorúan logikai és geográfiai közelség alapján csoportosítva
+        const groups = [
+            {
+                name: '1. Belváros és Bjørvika (Sétálós Művészet és Palota)',
+                subGroups: [
+                    {
+                        subName: '1A: Központi Tengely (Királyi Palotáig)',
+                        items: [
+                            { 
+                                id: 'karljohansgate', 
+                                name: 'Karl Johans Gate', 
+                                description: 'Oslo legfontosabb sugárútja, amely egyenesen az Oslói Főpályaudvartól a Királyi Palotáig vezet. Itt található a Parlament (Stortinget), a Nemzeti Színház, és számos bolt, kávézó. A város szíve.', 
+                                proTip: 'Tervezd úgy a sétádat, hogy az őrségváltásra (általában 13:30) érkezz a Palotához, ezzel két legyet üthetsz egy csapásra.', 
+                                icon: '🛍️',
+                                accessInfo: {
+                                    howToGetThere: 'Oslói Főpályaudvarról (Oslo S) indul. T-bane, villamos és busz központi csomópontja.',
+                                    fee: 'Ingyenes sétálózóna.',
+                                    feeIcon: '✔️'
+                                }
+                            },
+                            { 
+                                id: 'palace', 
+                                name: 'Királyi palota (Det Kongelige Slott)', 
+                                description: 'Norvégia uralkodójának, V. Harald királynak hivatalos rezidenciája. Nyáron látogatható (túrákkal). A park tökéletes hely a pihenésre.', 
+                                proTip: 'A palota parkja mindig nyitva áll, de a legszebb fotókhoz a reggeli órákat válaszd. Késő délután a piknikezők veszik birtokba.', 
+                                icon: '👑',
+                                accessInfo: {
+                                    howToGetThere: 'A Karl Johans Gate felső végén található. Séta a központi állomástól kb. 15-20 perc.',
+                                    fee: 'A park és az őrségváltás ingyenes. A palota belső túra nyáron fizetős (kb. 140 NOK).',
+                                    feeIcon: '💰'
+                                } 
+                            }
+                        ]
+                    },
+                    {
+                        subName: '1B: Bjørvika - Keleti Vízpart (Opera és Munch Múzeum)',
+                        items: [
+                            { 
+                                id: 'opera', 
+                                name: 'Operaház (Oslo Opera House)', 
+                                description: 'A norvég építészet modern csodája. A Carrara márvánnyal borított tetőn szabadon sétálhatsz, lenyűgöző kilátást nyújtva a fjordra és a városra.', 
+                                proTip: 'Az esti fényeknél a leglenyűgözőbb a márványtető. Menj fel a naplemente idején.', 
+                                icon: '🎶',
+                                accessInfo: {
+                                    howToGetThere: 'A Főpályaudvartól (Oslo S) 5 perc sétára található.',
+                                    fee: 'A tetőre felmenetel ingyenes. Előadások és belső túrák fizetősek.',
+                                    feeIcon: '✔️'
+                                } 
+                            },
+                            { 
+                                id: 'munchmuseum', 
+                                name: 'Munch Múzeum (Munchmuseet)', 
+                                description: 'A világ legnagyobb Edvard Munch-gyűjteménye a modern, új épületben, az Operaház közelében. Több verziója látható "A sikoly" című festménynek.', 
+                                proTip: 'Az épület 13. emeleti bárja és terasza Oslo egyik legjobb, panorámás pontja. Használd ki a kilátást, ha már itt vagy!', 
+                                icon: '🎨',
+                                accessInfo: {
+                                    howToGetThere: 'Az Operaháztól 5-10 perc sétára, a Bjørvika negyed végénél.',
+                                    fee: 'Fizetős (kb. 160 NOK). Oslo Pass-szal ingyenes.',
+                                    feeIcon: '💳'
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        subName: '1C: Akershus és Aker Brygge (Nyugati Történelem és Kikötő)',
+                        items: [
+                             { 
+                                id: 'akershus', 
+                                name: 'Akershus erőd (Akershus Festning)', 
+                                description: 'Középkori, 1290-ben épült erődítmény. Lenyűgöző kilátás nyílik róla a kikötőre, és itt található a norvég ellenállás múzeuma is.', 
+                                proTip: 'A belépés ingyenes az erőd területére. Tökéletes helyszín a naplementére.', 
+                                icon: '🏰',
+                                accessInfo: {
+                                    howToGetThere: 'A Vízparti sétányról 5-10 perc gyalog. A Rådhusplassen (Városháza tér) közelében.',
+                                    fee: 'Az erőd területe ingyenes. A kastély (nyáron) és a múzeum fizetős.',
+                                    feeIcon: '✔️'
+                                } 
+                            },
+                            { 
+                                id: 'nationalmuseum', 
+                                name: 'Nemzeti Múzeum (Nasjonalmuseet)', 
+                                description: 'Skandinávia legnagyobb művészeti múzeuma. Itt láthatod Norvégia legfontosabb műkincseit, Munch "A sikoly" című festményének egyik verzióját is. Az Akershus erőd és Aker Brygge közelében található.', 
+                                proTip: 'Foglalj időpontot előre online, elkerülendő a sorban állást.', 
+                                icon: '🖼️',
+                                accessInfo: {
+                                    howToGetThere: 'A Rådhusplassen (Városháza tér) és Aker Brygge között található.',
+                                    fee: 'Fizetős (kb. 180 NOK). Oslo Pass-szal ingyenes.',
+                                    feeIcon: '💳'
+                                } 
+                            },
+                            { 
+                                id: 'akerbrygge', 
+                                name: 'Aker Brygge', 
+                                description: 'Régi hajógyárak helyén kialakított, ma már Oslo egyik legdivatosabb negyede, tele éttermekkel, bárokkal és luxus üzletekkel. Sétálj a mólókon!', 
+                                proTip: 'A drágább éttermek helyett keress egy take-away tengeri herkentyűst, és ülj ki a mólóra nézelődni – ugyanaz a látvány, töredék áron.', 
+                                icon: '⛵',
+                                accessInfo: {
+                                    howToGetThere: 'A 12-es villamossal (Aker Brygge megálló) vagy 10-15 perc sétával a belvárosból.',
+                                    fee: 'Ingyenes sétálózóna.',
+                                    feeIcon: '✔️'
+                                }
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                name: '2. Fjord és Kulturális Központ (Bygdøy-félsziget)',
+                subGroups: [
+                    {
+                        subName: '2A: Bygdøy-félsziget Múzeumai (Egész napos program)',
+                        items: [
+                            { 
+                                id: 'bygdoy', 
+                                name: 'Bygdøy-félsziget Múzeumok (Fram, Kon-Tiki, Skanzen)', 
+                                description: 'A múzeumok félszigete, ahol a sarkvidéki felfedezések (Fram Múzeum), tengeri expedíciók (Kon-Tiki Múzeum) és a Norvég Népi Múzeum (skanzen) található. Komppal könnyen megközelíthető Aker Bryggéről.', 
+                                proTip: 'Egy napot szánj rá! A múzeumok között biciklibérléssel könnyebb a mozgás, vagy indulj korán, hogy mindent bejárhass.', 
+                                icon: '🧭',
+                                accessInfo: {
+                                    howToGetThere: 'Nyáron (április-október) B9-es komp az Aker Brygge-ről (~42 NOK). Télen 30-as busszal a Rådhusplassen-ről.',
+                                    fee: 'A múzeumok belépői külön fizetendők. Oslo Pass-szal a legtöbb ingyenes.',
+                                    feeIcon: '💳'
+                                } 
+                            }
+                        ]
+                    },
+                    {
+                        subName: '2B: Fjord Szigetek és Kompok (Aker Brygge / Rådhusplassen kikötőből)',
+                        items: [
+                            { 
+                                id: 'oslofjord', 
+                                name: 'Oslofjord hajókirándulás', 
+                                description: 'Többféle útvonal közül választhatsz, a rövidebb, szigeteket érintő túráktól a hosszabb utazásokig. Egyedi perspektívából láthatod a várost, és eljuthatsz a szigetekre is.', 
+                                proTip: 'Keresd az Oslói tömegközlekedési bérlettel (Ruter) is használható kompjáratokat (pl. B1-B4), ezek töredék áron visznek ki a szigetekre.', 
+                                icon: '🚢',
+                                accessInfo: {
+                                    howToGetThere: 'Kikötés a Rådhusplassen (Városháza tér) melletti Aker Brygge-nél.',
+                                    fee: 'A városi kompok (B-sorozat) normál jegyárral/bérlettel használhatóak. A turistahajók fizetősek.',
+                                    feeIcon: '🎫'
+                                } 
+                            },
+                            { 
+                                id: 'lindoya', 
+                                name: 'Lindøya Sziget', 
+                                description: 'Az Oslói-fjord egyik legnépszerűbb szigete, amely híres a színes nyaralóházairól és az érintetlen természetéről. Tökéletes helyszín úszásra és piknikezésre.', 
+                                proTip: 'Vigyél magaddal saját ételt és italt. A szigeten minimális a szolgáltatás, de a kis boltok nagyon drágák lehetnek.', 
+                                icon: '🏝️',
+                                accessInfo: {
+                                    howToGetThere: 'B1-es vagy B2-es komp a Rådhusplassen/Aker Brygge kikötőből.',
+                                    fee: 'Normál Oslo tömegközlekedési jegy (kb. 38 NOK).',
+                                    feeIcon: '🎫'
+                                } 
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                name: '3. Panoráma és Külső Zöldövezetek (T-bane vagy Villamos)',
+                subGroups: [
+                    {
+                        subName: '3A: Frogner Park és Nyugati Zöldövezet (Központi metróval/villamossal)',
+                        items: [
+                            { 
+                                id: 'frogner', 
+                                name: 'Frogner Park (Vigeland-park)', 
+                                description: 'A világ legnagyobb szoborparkja, amelyet egyetlen művész alkotott: Gustav Vigeland. A több mint 200 szobor az emberi élet ciklusát ábrázolja.', 
+                                proTip: 'Látogass el a parkon belüli Frognerbadet-re (uszoda) nyáron, ha forró a nap.', 
+                                icon: '🗿',
+                                accessInfo: {
+                                    howToGetThere: 'Metróval a Majorstuen megállóig (T-bane 1, 2, 3, 4, 5).',
+                                    fee: 'Ingyenes sétálózóna.',
+                                    feeIcon: '✔️'
+                                } 
+                            },
+                            { 
+                                id: 'botanikus', 
+                                name: 'Botanikus Kert (Botanisk hage)', 
+                                description: 'Oslo legrégebbi botanikus kertje a Természettudományi Múzeum része. Több mint 5500 növényfaj. Tökéletes a pihenésre.', 
+                                proTip: 'Látogass el a Kertészlak (Gartnerboligen) nevű kávézóba. Friss süteményeket és kávét kínálnak egy idilli környezetben.', 
+                                icon: '🌿',
+                                accessInfo: {
+                                    howToGetThere: '17-es villamossal a Lilletorget megállóig, majd 5 perc séta. (Tøyen negyed).',
+                                    fee: 'A kertbe a belépés ingyenes. Az üvegházakba és a múzeumokba fizetős lehet.',
+                                    feeIcon: '✔️'
+                                } 
+                            },
+                        ]
+                    },
+                    {
+                        subName: '3B: T-bane 1 Vonal - Holmenkollen és Természet (Magaslatok)',
+                        items: [
+                            { 
+                                id: 'holmenkollen', 
+                                name: 'Holmenkollen síugrósánc', 
+                                description: 'Norvégia egyik legismertebb sportlétesítménye. A modern sánc tetején található kilátóból fantasztikus panoráma nyílik Oslóra és a fjordra.', 
+                                proTip: 'Oslo Pass-szal ingyenes a belépés a Sánc Kilátóba és a Sí Múzeumba. Ezzel spórolhatsz a drága belépőn.', 
+                                icon: '⛷️',
+                                accessInfo: {
+                                    howToGetThere: '1-es metró (T-bane 1) Holmenkollen végállomásig, majd 10-15 perc séta dombon felfelé.',
+                                    fee: 'A sánc látogatása és a Sí Múzeum fizetős (kb. 160 NOK).',
+                                    feeIcon: '💳'
+                                } 
+                            },
+                             { 
+                                id: 'bjornhelvete', 
+                                name: 'Bjørnsjøhelvete (Nordmarka természeti pont)', 
+                                description: 'Egy drámai sziklaalakzat a Bjørnsjø tónál, Oslo Nordmarka erdejében. A név szó szerint "Bjørnsjø pokla" jelent. Ideális a túrázás és a csendes természet élvezetéhez. A T-bane 1 vonalhoz közel eső Sognsvann a kiindulópont.', 
+                                proTip: 'Csak tapasztalt túrázóknak ajánlott! Térkép és jó túracipő elengedhetetlen, ez egy igazi vadon. Tervezz 4-5 óra túrázást oda-vissza.', 
+                                icon: '⛰️',
+                                accessInfo: {
+                                    howToGetThere: '1-es metróval a Sognsvann végállomásig, majd hosszú (kb. 2-3 órás) túra az erdőn keresztül.',
+                                    fee: 'Ingyenes túraútvonal.',
+                                    feeIcon: '✔️'
+                                } 
+                            },
+                        ]
+                    },
+                    {
+                        subName: '3C: Délkeleti Panoráma és Különlegességek',
+                        items: [
+                            { 
+                                id: 'ekebergparken', 
+                                name: 'Ekebergparken Szoborpark', 
+                                description: 'Kortárs és modern szobrokkal teli park egy dombtetőn, ahonnan az egyik legszebb, ikonikus panoráma nyílik Oslóra és a fjordra.', 
+                                proTip: 'Az Ekebergparken szobrait nézegetve keresd meg a híres "A sikoly" (Munch) festmény helyszínét, ahonnan az eredeti ihlet származott.', 
+                                icon: '🌳',
+                                accessInfo: {
+                                    howToGetThere: '18-as vagy 19-es villamossal a Ekebergparken megállóig.',
+                                    fee: 'Ingyenes sétálózóna.',
+                                    feeIcon: '✔️'
+                                } 
+                            },
+                             { 
+                                id: 'pixelforest', 
+                                name: 'Nordic Pixel Forest (Művészeti Installáció)', 
+                                description: 'Egy kortárs, digitális művészeti vagy fényjáték installáció, amely a Nordic (északi) erdők hangulatát idézi meg pixel- és fényminták segítségével. (Helyszíne változó, de érdemes keresni az aktuális kiállítást.)', 
+                                proTip: 'Ez egy esti, sötétedés utáni program! Tájékozódj az aktuális nyitvatartásról és a pontos helyszínről, mivel időszakos kiállítás lehet.', 
+                                icon: '✨',
+                                accessInfo: {
+                                    howToGetThere: 'Helyszíne változó. Általában jól megközelíthető metróval/villamossal a városközpontból.',
+                                    fee: 'Gyakran ingyenes, de időszakos kiállításoknál lehet belépődíj.',
+                                    feeIcon: '?'
+                                } 
+                            }
+                        ]
+                    }
+                ]
+            }
+        ];
+
+        let activeLocationId = null;
+
+        // Function to render the list of locations in the sidebar (Nested Structure)
+        function renderLocationList() {
+            const listContainer = document.getElementById('location-list');
+            listContainer.innerHTML = groups.map(group => `
+                <h3 class="text-lg font-bold mt-4 mb-2 text-[#005f73] border-b border-dashed pb-1">${group.name}</h3>
+                ${group.subGroups.map(subGroup => `
+                    <div class="mt-3">
+                        <h4 class="text-base font-semibold text-gray-700 bg-gray-100 p-2 rounded-md">${subGroup.subName}</h4>
+                        ${subGroup.items.map(location => `
+                            <div id="card-${location.id}"
+                                class="location-card bg-gray-50 p-3 pl-4 mb-1 rounded-lg cursor-pointer hover:bg-gray-100 transition duration-150 border-l-4 border-l-transparent"
+                                onclick="showLocationDetails('${location.id}')"
+                                role="button"
+                                tabindex="0"
+                                aria-label="${location.name} részletei"
+                            >
+                                <p class="text-xl">${location.icon} <span class="font-medium text-gray-800">${location.name}</span></p>
+                            </div>
+                        `).join('')}
+                    </div>
+                `).join('')}
+            `).join('');
+        }
+
+        // Function to display the details of the selected location (Updated to search nested groups)
+        function showLocationDetails(id) {
+            const detailContainer = document.getElementById('detail-view');
+            let selectedLocation = null;
+
+            // Search for the location across all groups and subGroups
+            for (const group of groups) {
+                for (const subGroup of group.subGroups) {
+                    const found = subGroup.items.find(loc => loc.id === id);
+                    if (found) {
+                        selectedLocation = found;
+                        break;
+                    }
+                }
+                if (selectedLocation) break;
+            }
+
+            if (!selectedLocation) {
+                detailContainer.innerHTML = `<p class="text-red-500">Hiba: A helyszín nem található.</p>`;
+                return;
+            }
+
+            // --- Részletes nézet elemek összeállítása ---
+
+            // 1. Profi Tipp Box
+            const proTipBox = selectedLocation.proTip ? `
+                <div class="p-4 bg-lime-50 border-l-4 border-lime-600 rounded-xl shadow-md h-full">
+                    <h4 class="text-lg font-bold text-lime-800 flex items-center mb-1">
+                        <span class="text-2xl mr-2">💡</span> Profi Tipp
+                    </h4>
+                    <p class="text-lime-900 leading-relaxed">${selectedLocation.proTip}</p>
+                </div>
+            ` : '';
+
+            // 2. Belépés és Megközelítés Box
+            const accessInfoBox = selectedLocation.accessInfo ? `
+                <div class="p-4 bg-indigo-50 border-l-4 border-indigo-600 rounded-xl shadow-md h-full">
+                    <h4 class="text-lg font-bold text-indigo-800 flex items-center mb-1">
+                        <span class="text-2xl mr-2">${selectedLocation.accessInfo.feeIcon || '❓'}</span> Belépés és Megközelítés
+                    </h4>
+                    <p class="text-indigo-900 leading-relaxed">
+                        <strong class="font-semibold">Megközelítés:</strong> ${selectedLocation.accessInfo.howToGetThere}<br>
+                        <strong class="font-semibold">Díj:</strong> ${selectedLocation.accessInfo.fee}
+                    </p>
+                </div>
+            ` : '';
+
+
+            // Update the detail view
+            detailContainer.innerHTML = `
+                <div class="space-y-6">
+                    <h2 class="text-3xl font-bold text-[#005f73] border-b pb-2 flex items-center">
+                        <span class="text-4xl mr-3">${selectedLocation.icon}</span>
+                        ${selectedLocation.name}
+                    </h2>
+                    
+                    <!-- Leírás (Description) Box -->
+                    <div class="p-4 bg-blue-50 rounded-xl shadow-inner">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-2">Érdekességek</h3>
+                        <p class="text-gray-700 leading-relaxed">${selectedLocation.description}</p>
+                    </div>
+
+                    <!-- Profi Tipp és Belépés dobozok - Responsive grid -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                        ${accessInfoBox}
+                        ${proTipBox}
+                    </div>
+
+                    <!-- Map/Location Link Section (Shrunk and simplified) -->
+                    <div class="mt-6">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-3">Hol található?</h3>
+                        <div class="bg-gray-100 p-4 rounded-lg flex flex-col sm:flex-row items-center justify-between text-center sm:text-left shadow-md">
+                            <p class="text-gray-600 mb-4 sm:mb-0 sm:mr-4 text-sm">
+                                A pontos helyszín megtekintéséhez a Google Térképen, kattints a gombra:
+                            </p>
+                            <a href="https://www.google.com/maps/search/${encodeURIComponent(selectedLocation.name)}+Oslo" target="_blank" class="flex-shrink-0 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-full shadow-lg text-white bg-[#005f73] hover:bg-[#004d60] transition transform hover:scale-[1.05]">
+                                Térképen 🗺️
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Remove 'active-card' class from all cards
+            document.querySelectorAll('.location-card').forEach(card => {
+                card.classList.remove('active-card');
+            });
+
+            // Add 'active-card' class to the currently selected card
+            document.getElementById(`card-${id}`).classList.add('active-card');
+
+            // Set active ID
+            activeLocationId = id;
+        }
+
+        // Initialize the app on window load
+        window.onload = function() {
+            renderLocationList();
+
+            // Auto-select the first location on load
+            // Finding the ID of the first item in the first subgroup of the first group
+            if (groups.length > 0 && groups[0].subGroups.length > 0 && groups[0].subGroups[0].items.length > 0) {
+                showLocationDetails(groups[0].subGroups[0].items[0].id);
+            }
+        }
+    </script>
+
+</body>
+</html>
