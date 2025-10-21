@@ -28,16 +28,26 @@
         .custom-scroll::-webkit-scrollbar-thumb:hover {
             background: #94a3b8;
         }
+
+        /* * Mobile UX Fix: On small screens, the main container 
+         * should take up the full available height to feel like a proper app screen. 
+         */
+        @media (max-width: 1023px) {
+            #app-container {
+                height: 100vh;
+                overflow-y: hidden;
+            }
+        }
     </style>
 </head>
 <body class="min-h-screen">
 
-    <div id="app" class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
-        <header class="mb-8 p-4 bg-white shadow-lg rounded-xl">
-            <h1 class="text-4xl font-extrabold text-[#005f73] tracking-tight">
+    <div id="app-container" class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
+        <header class="mb-6 lg:mb-8 p-4 bg-white shadow-lg rounded-xl">
+            <h1 class="text-3xl sm:text-4xl font-extrabold text-[#005f73] tracking-tight">
                 Osloi Kaland: 3 Napos Útiterv
             </h1>
-            <p class="mt-2 text-lg text-gray-600">
+            <p class="mt-1 sm:mt-2 text-md text-gray-600">
                 A látnivalók geográfiai közelség alapján vannak logikai csoportokba rendezve.
             </p>
         </header>
@@ -45,10 +55,9 @@
         <!-- Main Layout: Sidebar and Content Area -->
         <div class="lg:flex lg:space-x-8">
 
-            <!-- 1. Sidebar: Location List (Responsive: Full width on mobile, 1/3 on desktop) -->
-            <aside class="lg:w-1/3 mb-6 lg:mb-0">
-                <!-- A max-h-[80vh] és overflow-y-auto most már csak desktopon aktív, mobilon a lista teljesen kinyúlik. -->
-                <div class="bg-white p-4 rounded-xl shadow-lg custom-scroll lg:max-h-[80vh] lg:overflow-y-auto">
+            <!-- 1. Sidebar: Location List (Rejtve mobilon, ha a details látszik) -->
+            <aside id="sidebar" class="lg:w-1/3 mb-6 lg:mb-0">
+                <div class="bg-white p-4 rounded-xl shadow-lg custom-scroll lg:max-h-[70vh] lg:overflow-y-auto">
                     <h2 class="text-2xl font-semibold mb-2 text-gray-800 border-b pb-2">Látnivalók csoportosítva</h2>
                     <div id="location-list">
                         <!-- Location cards will be inserted here by JavaScript -->
@@ -56,20 +65,29 @@
                 </div>
             </aside>
 
-            <!-- 2. Main Content: Details and Map Link (Responsive: Full width on mobile, 2/3 on desktop) -->
-            <main class="lg:w-2/3">
+            <!-- 2. Main Content: Details and Map Link (Rejtve mobilon, ha a lista látszik) -->
+            <main id="main-content" class="lg:w-2/3 h-full">
                 <div class="bg-white p-6 rounded-xl shadow-lg h-full">
+                    
+                    <!-- Vissza gomb mobilon -->
+                    <div id="back-button-container" class="lg:hidden mb-4">
+                        <button onclick="showListView()" class="w-full flex items-center justify-center px-4 py-2 border border-transparent text-base font-medium rounded-full shadow-sm text-white bg-gray-500 hover:bg-gray-600 transition">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                            Vissza a listához
+                        </button>
+                    </div>
+                    
                     <div id="detail-view">
                         <h2 class="text-3xl font-bold text-gray-900 mb-4">Üdvözlünk Oslóban!</h2>
                         <p class="text-gray-700 leading-relaxed">
-                            Válassz egy helyszínt a bal oldali listából (mobilon felül), hogy megtekintsd az érdekességeket, a megközelítési információkat és a profi tippeket!
+                            Válassz egy helyszínt a listából (mobilon a 'Vissza a listához' gombbal éred el), hogy megtekintsd a részletes háttérinformációkat, a megközelítési tippeket és az érdekességeket!
                         </p>
-                        <!-- Initial Map Placeholder (Simplified and smaller) -->
+                        <!-- Initial Map Placeholder -->
                         <div class="mt-8">
                             <h3 class="text-xl font-semibold text-[#005f73] mb-3">Helyszínkereső</h3>
                             <div class="bg-gray-100 border border-gray-300 rounded-lg p-6 flex flex-col items-center justify-center text-center">
                                 <svg class="w-10 h-10 text-gray-500 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.828 0l-4.243-4.243a8 8 8 0111.314 0z"></path>
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
                                 </svg>
                                 <p class="text-gray-600 mb-3 text-sm">
@@ -87,7 +105,7 @@
     </div>
 
     <script>
-        // Adatstruktúra az Oslói helyszínekhez, szigorúan logikai és geográfiai közelség alapján csoportosítva
+        // Adatstruktúra az Oslói helyszínekhez
         const groups = [
             {
                 name: '1. Belváros és Bjørvika (Sétálós Művészet és Palota)',
@@ -368,6 +386,45 @@
         ];
 
         let activeLocationId = null;
+        // Mobile State Management: 'list' (default on mobile) or 'details' (when an item is selected)
+        let mobileView = 'list'; 
+        const MOBILE_BREAKPOINT = 1024; // Tailwind's lg breakpoint
+
+        // Helper function to check if we are on a small screen
+        function isMobile() {
+            return window.innerWidth < MOBILE_BREAKPOINT;
+        }
+
+        // Function to toggle visibility based on mobile state
+        function updateViewVisibility() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('main-content');
+
+            if (isMobile()) {
+                if (mobileView === 'list') {
+                    // Show List, Hide Details
+                    sidebar.classList.remove('hidden');
+                    mainContent.classList.add('hidden');
+                } else {
+                    // Show Details, Hide List
+                    sidebar.classList.add('hidden');
+                    mainContent.classList.remove('hidden');
+                }
+            } else {
+                // Desktop: Always show both
+                sidebar.classList.remove('hidden');
+                mainContent.classList.remove('hidden');
+            }
+        }
+
+        // Switches to the list view (only affects mobile)
+        function showListView() {
+            mobileView = 'list';
+            updateViewVisibility();
+            // Scroll to top of the list container if possible
+            document.getElementById('app-container').scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
 
         // Function to render the list of locations in the sidebar (Nested Structure)
         function renderLocationList() {
@@ -393,7 +450,7 @@
             `).join('');
         }
 
-        // Function to display the details of the selected location (Updated to search nested groups)
+        // Function to display the details of the selected location (Updated for mobile flow)
         function showLocationDetails(id) {
             const detailContainer = document.getElementById('detail-view');
             let selectedLocation = null;
@@ -440,7 +497,7 @@
                 </div>
             ` : '';
             
-            // 3. Részletes Háttérinformáció Box (AZ ITT LÉVŐ SZÖVEG MÁR A detailedDescription-t használja)
+            // 3. Részletes Háttérinformáció Box
             const detailedDescriptionBox = `
                 <div class="p-6 bg-blue-100 rounded-xl shadow-lg mt-6 border-t-4 border-t-[#005f73]">
                     <h3 class="text-xl font-bold text-gray-800 mb-3">Részletes Háttérinformáció</h3>
@@ -482,7 +539,7 @@
                         </div>
                     </div>
                     
-                    <!-- 4. Részletes Háttérinformáció Box (A HOSSZÚ LEÍRÁS - selectedLocation.detailedDescription) -->
+                    <!-- 4. Részletes Háttérinformáció Box -->
                     ${detailedDescriptionBox}
                 </div>
             `;
@@ -497,16 +554,36 @@
 
             // Set active ID
             activeLocationId = id;
+
+            // --- MOBILE OPTIMIZATION: Switch view after selection ---
+            if (isMobile()) {
+                mobileView = 'details';
+                updateViewVisibility();
+                // Scroll to the top of the details view for better UX
+                document.getElementById('app-container').scrollTo({ top: 0, behavior: 'smooth' });
+            }
         }
 
         // Initialize the app on window load
         window.onload = function() {
             renderLocationList();
 
+            // Handle window resize for responsive layout switching
+            window.addEventListener('resize', updateViewVisibility);
+
             // Auto-select the first location on load
-            // Finding the ID of the first item in the first subgroup of the first group
-            if (groups.length > 0 && groups[0].subGroups.length > 0 && groups[0].subGroups[0].items.length > 0) {
-                showLocationDetails(groups[0].subGroups[0].items[0].id);
+            const firstLocationId = groups[0]?.subGroups[0]?.items[0]?.id;
+            if (firstLocationId) {
+                showLocationDetails(firstLocationId);
+            }
+            
+            // Initial visibility check. On load, if mobile, we want to see the list first.
+            // Since showLocationDetails was called, mobileView is currently 'details'. 
+            // We force it back to 'list' for the initial load if it's a small screen.
+            if (isMobile()) {
+                showListView();
+            } else {
+                updateViewVisibility(); // For desktop, ensure both are visible
             }
         }
     </script>
