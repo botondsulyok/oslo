@@ -21,20 +21,20 @@
         .custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
         .custom-scroll::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
-        /* Animation for screen transitions */
-        @keyframes slide-in {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
+        /* Minimal animation for screen transitions */
+        @keyframes fade-in {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
-        @keyframes slide-out {
-            from { transform: translateX(0); opacity: 1; }
-            to { transform: translateX(-100%); opacity: 0; }
+        @keyframes fade-out {
+            from { opacity: 1; }
+            to { opacity: 0; }
         }
         .view-enter {
-            animation: slide-in 0.25s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+            animation: fade-in 0.2s ease-in-out forwards;
         }
         .view-exit {
-            animation: slide-out 0.25s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+            animation: fade-out 0.2s ease-in-out forwards;
         }
     </style>
 </head>
@@ -359,7 +359,7 @@
                 
                 appRoot.classList.remove('view-exit');
                 appRoot.classList.add('view-enter');
-            }, 250); // Match timeout with CSS animation duration
+            }, 200); // Match timeout with CSS animation duration
         }
 
         /**
@@ -435,12 +435,12 @@
                     </div>
 
                     <div class="bg-white p-6 rounded-xl shadow-lg space-y-6">
-                        <div class="flex justify-between items-start border-b pb-3">
-                            <h2 class="text-3xl font-bold text-[#005f73] flex items-center">
+                        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start border-b pb-3">
+                            <h2 class="text-3xl font-bold text-[#005f73] flex items-center mb-3 sm:mb-0">
                                 <span class="text-4xl mr-3">${location.icon}</span>
                                 ${location.name}
                             </h2>
-                            <a href="https://www.google.com/maps/search/${encodeURIComponent(location.name)}+Oslo" target="_blank" class="flex-shrink-0 ml-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-full shadow-lg text-white bg-[#005f73] hover:bg-[#004d60] transition transform hover:scale-[1.05]">
+                            <a href="https://www.google.com/maps/search/${encodeURIComponent(location.name)}+Oslo" target="_blank" class="flex-shrink-0 w-full sm:w-auto inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-full shadow-lg text-white bg-[#005f73] hover:bg-[#004d60] transition transform hover:scale-[1.05]">
                                 Térképen 🗺️
                             </a>
                         </div>
