@@ -20,22 +20,6 @@
         .custom-scroll::-webkit-scrollbar { width: 6px; }
         .custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
         .custom-scroll::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-
-        /* Minimal animation for screen transitions */
-        @keyframes fade-in {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        @keyframes fade-out {
-            from { opacity: 1; }
-            to { opacity: 0; }
-        }
-        .view-enter {
-            animation: fade-in 0.2s ease-in-out forwards;
-        }
-        .view-exit {
-            animation: fade-out 0.2s ease-in-out forwards;
-        }
     </style>
 </head>
 <body class="min-h-screen">
@@ -337,29 +321,21 @@
          * Main render function. Decides which view to show based on AppState.
          */
         function render() {
-            // Apply a transition effect
-            appRoot.classList.add('view-exit');
+            appRoot.innerHTML = ''; // Clear previous content
             
-            setTimeout(() => {
-                appRoot.innerHTML = ''; // Clear previous content
-                
-                if (AppState.currentView === 'list') {
-                    appRoot.innerHTML = renderListView();
-                    // Restore scroll position after DOM update
-                    setTimeout(() => {
-                        const listEl = document.getElementById('location-list-container');
-                        if (listEl) {
-                            listEl.scrollTop = AppState.listScrollPosition;
-                        }
-                    }, 0);
-                } else if (AppState.currentView === 'detail') {
-                    appRoot.innerHTML = renderDetailView(AppState.activeLocationId);
-                    window.scrollTo(0, 0); // Scroll detail view to top
-                }
-                
-                appRoot.classList.remove('view-exit');
-                appRoot.classList.add('view-enter');
-            }, 200); // Match timeout with CSS animation duration
+            if (AppState.currentView === 'list') {
+                appRoot.innerHTML = renderListView();
+                // Restore scroll position after DOM update
+                setTimeout(() => {
+                    const listEl = document.getElementById('location-list-container');
+                    if (listEl) {
+                        listEl.scrollTop = AppState.listScrollPosition;
+                    }
+                }, 0);
+            } else if (AppState.currentView === 'detail') {
+                appRoot.innerHTML = renderDetailView(AppState.activeLocationId);
+                window.scrollTo(0, 0); // Scroll detail view to top
+            }
         }
 
         /**
