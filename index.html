@@ -11,101 +11,38 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f7f9fb; /* Light background for modern feel */
+            background-color: #f7f9fb;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
-        .active-card {
-            background-color: #e0f2fe !important; /* light blue */
-            border-left: 4px solid #005f73; /* Dark teal accent */
-        }
-        /* Custom scrollbar style for better aesthetics (mainly desktop) */
-        .custom-scroll::-webkit-scrollbar {
-            width: 6px;
-        }
-        .custom-scroll::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 3px;
-        }
-        .custom-scroll::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
-        }
+        /* Custom scrollbar style for better aesthetics */
+        .custom-scroll::-webkit-scrollbar { width: 6px; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+        .custom-scroll::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
-        /* * Mobile UX Fix: On small screens, the main container 
-         * should take up the full available height to feel like a proper app screen. 
-         */
-        @media (max-width: 1023px) {
-            #app-container {
-                height: 100vh;
-                overflow-y: auto;
-            }
+        /* Animation for screen transitions */
+        @keyframes slide-in {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes slide-out {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(-100%); opacity: 0; }
+        }
+        .view-enter {
+            animation: slide-in 0.3s ease-out forwards;
+        }
+        .view-exit {
+            animation: slide-out 0.3s ease-in forwards;
         }
     </style>
 </head>
 <body class="min-h-screen">
 
-    <div id="app-container" class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
-        <header class="mb-6 lg:mb-8 p-4 bg-white shadow-lg rounded-xl">
-            <h1 class="text-3xl sm:text-4xl font-extrabold text-[#005f73] tracking-tight">
-                Osloi Kaland: 3 Napos Útiterv
-            </h1>
-            <p class="mt-1 sm:mt-2 text-md text-gray-600">
-                A látnivalók geográfiai közelség alapján vannak logikai csoportokba rendezve.
-            </p>
-        </header>
-
-        <!-- Main Layout: Sidebar and Content Area -->
-        <div class="lg:flex lg:space-x-8">
-
-            <!-- 1. Sidebar: Location List (Rejtve mobilon, ha a details látszik) -->
-            <aside id="sidebar" class="lg:w-1/3 mb-6 lg:mb-0">
-                <div id="list-scroll-container" class="bg-white p-4 rounded-xl shadow-lg custom-scroll lg:max-h-[70vh] lg:overflow-y-auto">
-                    <h2 class="text-2xl font-semibold mb-2 text-gray-800 border-b pb-2">Látnivalók csoportosítva</h2>
-                    <div id="location-list">
-                        <!-- Location cards will be inserted here by JavaScript -->
-                    </div>
-                </div>
-            </aside>
-
-            <!-- 2. Main Content: Details and Map Link (Rejtve mobilon, ha a lista látszik) -->
-            <main id="main-content" class="lg:w-2/3 h-full">
-                <div class="bg-white p-6 rounded-xl shadow-lg h-full">
-                    
-                    <!-- Vissza gomb mobilon -->
-                    <div id="back-button-container" class="lg:hidden mb-4">
-                        <button onclick="showListView()" class="w-full flex items-center justify-center px-4 py-2 border border-transparent text-base font-medium rounded-full shadow-sm text-white bg-gray-500 hover:bg-gray-600 transition">
-                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-                            Vissza a listához
-                        </button>
-                    </div>
-                    
-                    <div id="detail-view">
-                        <h2 class="text-3xl font-bold text-gray-900 mb-4">Üdvözlünk Oslóban!</h2>
-                        <p class="text-gray-700 leading-relaxed">
-                            Válassz egy helyszínt a listából (mobilon a 'Vissza a listához' gombbal éred el), hogy megtekintsd a részletes háttérinformációkat, a megközelítési tippeket és az érdekességeket!
-                        </p>
-                        <!-- Initial Map Placeholder -->
-                        <div class="mt-8">
-                            <h3 class="text-xl font-semibold text-[#005f73] mb-3">Helyszínkereső</h3>
-                            <div class="bg-gray-100 border border-gray-300 rounded-lg p-6 flex flex-col items-center justify-center text-center">
-                                <svg class="w-10 h-10 text-gray-500 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.828 0l-4.243-4.243a8 8 8 0111.314 0z"></path>
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                </svg>
-                                <p class="text-gray-600 mb-3 text-sm">
-                                    Kattints egy helyszínre, és megnyithatod a Google Térképen!
-                                </p>
-                                <a href="https://www.google.com/maps/search/Oslo+látnivalók" target="_blank" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-full shadow-sm text-white bg-[#005f73] hover:bg-[#004d60] transition">
-                                    Összes látnivaló Térképen
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </main>
-        </div>
-    </div>
+    <div id="app-root"></div>
 
     <script>
-        // Adatstruktúra az Oslói helyszínekhez
+        // --- DATA ---
         const groups = [
             {
                 name: '1. Belváros és Bjørvika (Sétálós Művészet és Palota)',
@@ -385,217 +322,192 @@
             }
         ];
 
-        let activeLocationId = null;
-        let listScrollPosition = 0;
-        // Mobile State Management: 'list' (default on mobile) or 'details' (when an item is selected)
-        let mobileView = 'list'; 
-        const MOBILE_BREAKPOINT = 1024; // Tailwind's lg breakpoint
+        // --- STATE MANAGEMENT ---
+        const AppState = {
+            currentView: 'list', // 'list' or 'detail'
+            activeLocationId: null,
+            listScrollPosition: 0,
+        };
 
-        // Helper function to check if we are on a small screen
-        function isMobile() {
-            return window.innerWidth < MOBILE_BREAKPOINT;
-        }
+        // --- DOM & RENDERING ---
+        const appRoot = document.getElementById('app-root');
 
-        // Function to toggle visibility based on mobile state
-        function updateViewVisibility() {
-            const sidebar = document.getElementById('sidebar');
-            const mainContent = document.getElementById('main-content');
+        /**
+         * Main render function. Decides which view to show based on AppState.
+         */
+        function render() {
+            // Apply a transition effect
+            appRoot.classList.add('view-exit');
+            
+            setTimeout(() => {
+                appRoot.innerHTML = ''; // Clear previous content
+                window.scrollTo(0, 0); // Scroll to top on new view
 
-            if (isMobile()) {
-                if (mobileView === 'list') {
-                    // Show List, Hide Details
-                    sidebar.classList.remove('hidden');
-                    mainContent.classList.add('hidden');
-                } else {
-                    // Show Details, Hide List
-                    sidebar.classList.add('hidden');
-                    mainContent.classList.remove('hidden');
+                if (AppState.currentView === 'list') {
+                    appRoot.innerHTML = renderListView();
+                    // Restore scroll position after DOM update
+                    setTimeout(() => {
+                        const listEl = document.getElementById('location-list-container');
+                        if (listEl) {
+                            listEl.scrollTop = AppState.listScrollPosition;
+                        }
+                    }, 0);
+                } else if (AppState.currentView === 'detail') {
+                    appRoot.innerHTML = renderDetailView(AppState.activeLocationId);
                 }
-            } else {
-                // Desktop: Always show both
-                sidebar.classList.remove('hidden');
-                mainContent.classList.remove('hidden');
-            }
+                
+                appRoot.classList.remove('view-exit');
+                appRoot.classList.add('view-enter');
+            }, 300); // Match timeout with CSS animation duration
         }
 
-        // Switches to the list view (only affects mobile)
-        function showListView() {
-            mobileView = 'list';
-            updateViewVisibility();
-            // Restore the scroll position of the list
-            const listContainer = document.getElementById('list-scroll-container');
-            if (listContainer) {
-                listContainer.scrollTop = listScrollPosition;
-            }
-        }
-
-
-        // Function to render the list of locations in the sidebar (Nested Structure)
-        function renderLocationList() {
-            const listContainer = document.getElementById('location-list');
-            listContainer.innerHTML = groups.map(group => `
-                <h3 class="text-lg font-bold mt-4 mb-2 text-[#005f73] border-b border-dashed pb-1">${group.name}</h3>
-                ${group.subGroups.map(subGroup => `
-                    <div class="mt-3">
-                        <h4 class="text-base font-semibold text-gray-700 bg-gray-100 p-2 rounded-md">${subGroup.subName}</h4>
-                        ${subGroup.items.map(location => `
-                            <div id="card-${location.id}"
-                                class="location-card bg-gray-50 p-3 pl-4 mb-1 rounded-lg cursor-pointer hover:bg-gray-100 transition duration-150 border-l-4 border-l-transparent"
-                                onclick="showLocationDetails('${location.id}')"
-                                role="button"
-                                tabindex="0"
-                                aria-label="${location.name} részletei"
-                            >
-                                <p class="text-xl">${location.icon} <span class="font-medium text-gray-800">${location.name}</span></p>
-                            </div>
-                        `).join('')}
-                    </div>
-                `).join('')}
+        /**
+         * Generates the HTML for the main list view.
+         */
+        function renderListView() {
+            const locationListHTML = groups.map(group => `
+                <div class="mb-6">
+                    <h3 class="text-lg font-bold mt-4 mb-2 text-[#005f73] border-b border-dashed pb-1">${group.name}</h3>
+                    ${group.subGroups.map(subGroup => `
+                        <div class="mt-3">
+                            <h4 class="text-base font-semibold text-gray-700 bg-gray-100 p-2 rounded-md">${subGroup.subName}</h4>
+                            ${subGroup.items.map(location => `
+                                <div
+                                    class="bg-gray-50 p-3 pl-4 my-1 rounded-lg cursor-pointer hover:bg-blue-100 transition duration-150 border-l-4 border-transparent hover:border-blue-500"
+                                    onclick="showLocationDetails('${location.id}')"
+                                    role="button"
+                                    tabindex="0"
+                                >
+                                    <p class="text-xl">${location.icon} <span class="font-medium text-gray-800">${location.name}</span></p>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `).join('')}
+                </div>
             `).join('');
+
+            return `
+                <div class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
+                    <header class="mb-6 p-4 bg-white shadow-lg rounded-xl">
+                        <h1 class="text-3xl sm:text-4xl font-extrabold text-[#005f73] tracking-tight">Osloi Kaland: 3 Napos Útiterv</h1>
+                        <p class="mt-1 sm:mt-2 text-md text-gray-600">A látnivalók geográfiai közelség alapján vannak logikai csoportokba rendezve.</p>
+                    </header>
+                    <div id="location-list-container" class="bg-white p-4 rounded-xl shadow-lg custom-scroll overflow-y-auto">
+                        <h2 class="text-2xl font-semibold mb-2 text-gray-800 border-b pb-2">Látnivalók csoportosítva</h2>
+                        ${locationListHTML}
+                    </div>
+                </div>
+            `;
         }
 
-        // Function to display the details of the selected location (Updated for mobile flow)
-        function showLocationDetails(id) {
-            if (isMobile()) {
-                const listContainer = document.getElementById('list-scroll-container');
-                if (listContainer) {
-                    listScrollPosition = listContainer.scrollTop;
-                }
+        /**
+         * Generates the HTML for the detail view.
+         */
+        function renderDetailView(id) {
+            const location = findLocationById(id);
+            if (!location) {
+                return `<p class="text-red-500 p-8">Hiba: A helyszín nem található.</p>`;
             }
 
-            const detailContainer = document.getElementById('detail-view');
-            let selectedLocation = null;
+            const proTipBox = location.proTip ? `
+                <div class="p-4 bg-lime-50 border-l-4 border-lime-600 rounded-xl shadow-md h-full">
+                    <h4 class="text-lg font-bold text-lime-800 flex items-center mb-1"><span class="text-2xl mr-2">💡</span> Profi Tipp</h4>
+                    <p class="text-lime-900 leading-relaxed">${location.proTip}</p>
+                </div>` : '';
 
-            // Search for the location across all groups and subGroups
+            const accessInfoBox = location.accessInfo ? `
+                <div class="p-4 bg-indigo-50 border-l-4 border-indigo-600 rounded-xl shadow-md h-full">
+                    <h4 class="text-lg font-bold text-indigo-800 flex items-center mb-1"><span class="text-2xl mr-2">${location.accessInfo.feeIcon || '❓'}</span> Belépés és Megközelítés</h4>
+                    <p class="text-indigo-900 leading-relaxed">
+                        <strong class="font-semibold">Megközelítés:</strong> ${location.accessInfo.howToGetThere}<br>
+                        <strong class="font-semibold">Díj:</strong> ${location.accessInfo.fee}
+                    </p>
+                </div>` : '';
+
+            return `
+                <div class="max-w-4xl mx-auto p-4 sm:p-6 lg:p-8">
+                    <div class="mb-6">
+                        <button onclick="showListView()" class="flex items-center px-4 py-2 border border-gray-300 text-base font-medium rounded-full shadow-sm text-gray-700 bg-white hover:bg-gray-50 transition">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                            Vissza a listához
+                        </button>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-xl shadow-lg space-y-6">
+                        <h2 class="text-3xl font-bold text-[#005f73] border-b pb-2 flex items-center">
+                            <span class="text-4xl mr-3">${location.icon}</span>
+                            ${location.name}
+                        </h2>
+                        
+                        <div class="p-4 bg-blue-50 rounded-xl shadow-inner">
+                            <h3 class="text-xl font-semibold text-gray-800 mb-2">Érdekességek</h3>
+                            <p class="text-gray-700 leading-relaxed">${location.description}</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            ${accessInfoBox}
+                            ${proTipBox}
+                        </div>
+
+                        <div class="mt-6">
+                            <h3 class="text-xl font-semibold text-gray-800 mb-3">Hol található?</h3>
+                            <div class="bg-gray-100 p-4 rounded-lg flex flex-col sm:flex-row items-center justify-between text-center sm:text-left shadow-md">
+                                <p class="text-gray-600 mb-4 sm:mb-0 sm:mr-4 text-sm">A pontos helyszín megtekintéséhez a Google Térképen, kattints a gombra:</p>
+                                <a href="https://www.google.com/maps/search/${encodeURIComponent(location.name)}+Oslo" target="_blank" class="flex-shrink-0 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-full shadow-lg text-white bg-[#005f73] hover:bg-[#004d60] transition transform hover:scale-[1.05]">
+                                    Térképen 🗺️
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <div class="p-6 bg-blue-100 rounded-xl shadow-lg mt-6 border-t-4 border-t-[#005f73]">
+                            <h3 class="text-xl font-bold text-gray-800 mb-3">Részletes Háttérinformáció</h3>
+                            <p class="text-gray-700 leading-relaxed">${location.detailedDescription}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // --- LOGIC & EVENT HANDLERS ---
+
+        /**
+         * Updates state to show the detail view, then triggers a re-render.
+         */
+        function showLocationDetails(id) {
+            const listEl = document.getElementById('location-list-container');
+            if (listEl) {
+                AppState.listScrollPosition = listEl.scrollTop;
+            }
+            AppState.currentView = 'detail';
+            AppState.activeLocationId = id;
+            render();
+        }
+
+        /**
+         * Updates state to show the list view, then triggers a re-render.
+         */
+        function showListView() {
+            AppState.currentView = 'list';
+            AppState.activeLocationId = null;
+            render();
+        }
+
+        /**
+         * Helper to find a location object by its ID.
+         */
+        function findLocationById(id) {
             for (const group of groups) {
                 for (const subGroup of group.subGroups) {
                     const found = subGroup.items.find(loc => loc.id === id);
-                    if (found) {
-                        selectedLocation = found;
-                        break;
-                    }
+                    if (found) return found;
                 }
-                if (selectedLocation) break;
             }
-
-            if (!selectedLocation) {
-                detailContainer.innerHTML = `<p class="text-red-500">Hiba: A helyszín nem található.</p>`;
-                return;
-            }
-
-            // --- Részletes nézet elemek összeállítása ---
-
-            // 1. Profi Tipp Box
-            const proTipBox = selectedLocation.proTip ? `
-                <div class="p-4 bg-lime-50 border-l-4 border-lime-600 rounded-xl shadow-md h-full">
-                    <h4 class="text-lg font-bold text-lime-800 flex items-center mb-1">
-                        <span class="text-2xl mr-2">💡</span> Profi Tipp
-                    </h4>
-                    <p class="text-lime-900 leading-relaxed">${selectedLocation.proTip}</p>
-                </div>
-            ` : '';
-
-            // 2. Belépés és Megközelítés Box
-            const accessInfoBox = selectedLocation.accessInfo ? `
-                <div class="p-4 bg-indigo-50 border-l-4 border-indigo-600 rounded-xl shadow-md h-full">
-                    <h4 class="text-lg font-bold text-indigo-800 flex items-center mb-1">
-                        <span class="text-2xl mr-2">${selectedLocation.accessInfo.feeIcon || '❓'}</span> Belépés és Megközelítés
-                    </h4>
-                    <p class="text-indigo-900 leading-relaxed">
-                        <strong class="font-semibold">Megközelítés:</strong> ${selectedLocation.accessInfo.howToGetThere}<br>
-                        <strong class="font-semibold">Díj:</strong> ${selectedLocation.accessInfo.fee}
-                    </p>
-                </div>
-            ` : '';
-            
-            // 3. Részletes Háttérinformáció Box
-            const detailedDescriptionBox = `
-                <div class="p-6 bg-blue-100 rounded-xl shadow-lg mt-6 border-t-4 border-t-[#005f73]">
-                    <h3 class="text-xl font-bold text-gray-800 mb-3">Részletes Háttérinformáció</h3>
-                    <p class="text-gray-700 leading-relaxed">${selectedLocation.detailedDescription}</p>
-                </div>
-            `;
-
-
-            // Update the detail view
-            detailContainer.innerHTML = `
-                <div class="space-y-6">
-                    <h2 class="text-3xl font-bold text-[#005f73] border-b pb-2 flex items-center">
-                        <span class="text-4xl mr-3">${selectedLocation.icon}</span>
-                        ${selectedLocation.name}
-                    </h2>
-                    
-                    <!-- 1. Érdekességek Box (A RÖVID LEÍRÁS - selectedLocation.description) -->
-                    <div class="p-4 bg-blue-50 rounded-xl shadow-inner">
-                        <h3 class="text-xl font-semibold text-gray-800 mb-2">Érdekességek</h3>
-                        <p class="text-gray-700 leading-relaxed">${selectedLocation.description}</p>
-                    </div>
-
-                    <!-- 2. Profi Tipp és Belépés dobozok - Responsive grid -->
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                        ${accessInfoBox}
-                        ${proTipBox}
-                    </div>
-
-                    <!-- 3. Map/Location Link Section (A térkép és a link) -->
-                    <div class="mt-6">
-                        <h3 class="text-xl font-semibold text-gray-800 mb-3">Hol található?</h3>
-                        <div class="bg-gray-100 p-4 rounded-lg flex flex-col sm:flex-row items-center justify-between text-center sm:text-left shadow-md">
-                            <p class="text-gray-600 mb-4 sm:mb-0 sm:mr-4 text-sm">
-                                A pontos helyszín megtekintéséhez a Google Térképen, kattints a gombra:
-                            </p>
-                            <a href="https://www.google.com/maps/search/${encodeURIComponent(selectedLocation.name)}+Oslo" target="_blank" class="flex-shrink-0 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-full shadow-lg text-white bg-[#005f73] hover:bg-[#004d60] transition transform hover:scale-[1.05]">
-                                Térképen 🗺️
-                            </a>
-                        </div>
-                    </div>
-                    
-                    <!-- 4. Részletes Háttérinformáció Box -->
-                    ${detailedDescriptionBox}
-                </div>
-            `;
-
-            // Remove 'active-card' class from all cards
-            document.querySelectorAll('.location-card').forEach(card => {
-                card.classList.remove('active-card');
-            });
-
-            // Add 'active-card' class to the currently selected card
-            document.getElementById(`card-${id}`).classList.add('active-card');
-
-            // Set active ID
-            activeLocationId = id;
-
-            // --- MOBILE OPTIMIZATION: Switch view after selection ---
-            if (isMobile()) {
-                mobileView = 'details';
-                updateViewVisibility();
-                // Scroll to the top of the details view for better UX
-                document.getElementById('app-container').scrollTo({ top: 0, behavior: 'smooth' });
-            }
+            return null;
         }
 
-        // Initialize the app on window load
+        // --- INITIALIZATION ---
         window.onload = function() {
-            renderLocationList();
-
-            // Handle window resize for responsive layout switching
-            window.addEventListener('resize', updateViewVisibility);
-
-            // Auto-select the first location on load
-            const firstLocationId = groups[0]?.subGroups[0]?.items[0]?.id;
-            if (firstLocationId) {
-                showLocationDetails(firstLocationId);
-            }
-            
-            // Initial visibility check. On load, if mobile, we want to see the list first.
-            // Since showLocationDetails was called, mobileView is currently 'details'. 
-            // We force it back to 'list' for the initial load if it's a small screen.
-            if (isMobile()) {
-                showListView();
-            } else {
-                updateViewVisibility(); // For desktop, ensure both are visible
-            }
+            render(); // Initial render of the list view
         }
     </script>
 
