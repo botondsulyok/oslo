@@ -14,6 +14,7 @@
             background-color: #f7f9fb;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
+            overflow: hidden; /* Prevent body scrolling */
         }
         /* Custom scrollbar style for better aesthetics */
         .custom-scroll::-webkit-scrollbar { width: 6px; }
@@ -22,18 +23,18 @@
 
         /* Animation for screen transitions */
         @keyframes slide-in {
-            from { transform: translateX(100%); opacity: 0; }
+            from { transform: translateX(100%); opacity: 0.5; }
             to { transform: translateX(0); opacity: 1; }
         }
         @keyframes slide-out {
             from { transform: translateX(0); opacity: 1; }
-            to { transform: translateX(-100%); opacity: 0; }
+            to { transform: translateX(-100%); opacity: 0.5; }
         }
         .view-enter {
-            animation: slide-in 0.3s ease-out forwards;
+            animation: slide-in 0.25s cubic-bezier(0.4, 0, 0.2, 1) forwards;
         }
         .view-exit {
-            animation: slide-out 0.3s ease-in forwards;
+            animation: slide-out 0.25s cubic-bezier(0.4, 0, 0.2, 1) forwards;
         }
     </style>
 </head>
@@ -341,8 +342,7 @@
             
             setTimeout(() => {
                 appRoot.innerHTML = ''; // Clear previous content
-                window.scrollTo(0, 0); // Scroll to top on new view
-
+                
                 if (AppState.currentView === 'list') {
                     appRoot.innerHTML = renderListView();
                     // Restore scroll position after DOM update
@@ -354,11 +354,12 @@
                     }, 0);
                 } else if (AppState.currentView === 'detail') {
                     appRoot.innerHTML = renderDetailView(AppState.activeLocationId);
+                    window.scrollTo(0, 0); // Scroll detail view to top
                 }
                 
                 appRoot.classList.remove('view-exit');
                 appRoot.classList.add('view-enter');
-            }, 300); // Match timeout with CSS animation duration
+            }, 250); // Match timeout with CSS animation duration
         }
 
         /**
@@ -387,12 +388,12 @@
             `).join('');
 
             return `
-                <div class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
-                    <header class="mb-6 p-4 bg-white shadow-lg rounded-xl">
+                <div class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 flex flex-col h-screen">
+                    <header class="mb-6 p-4 bg-white shadow-lg rounded-xl flex-shrink-0">
                         <h1 class="text-3xl sm:text-4xl font-extrabold text-[#005f73] tracking-tight">Osloi Kaland: 3 Napos Útiterv</h1>
                         <p class="mt-1 sm:mt-2 text-md text-gray-600">A látnivalók geográfiai közelség alapján vannak logikai csoportokba rendezve.</p>
                     </header>
-                    <div id="location-list-container" class="bg-white p-4 rounded-xl shadow-lg custom-scroll overflow-y-auto">
+                    <div id="location-list-container" class="bg-white p-4 rounded-xl shadow-lg custom-scroll overflow-y-auto flex-grow">
                         <h2 class="text-2xl font-semibold mb-2 text-gray-800 border-b pb-2">Látnivalók csoportosítva</h2>
                         ${locationListHTML}
                     </div>
@@ -425,7 +426,7 @@
                 </div>` : '';
 
             return `
-                <div class="max-w-4xl mx-auto p-4 sm:p-6 lg:p-8">
+                <div class="max-w-4xl mx-auto p-4 sm:p-6 lg:p-8 h-screen overflow-y-auto custom-scroll">
                     <div class="mb-6">
                         <button onclick="showListView()" class="flex items-center px-4 py-2 border border-gray-300 text-base font-medium rounded-full shadow-sm text-gray-700 bg-white hover:bg-gray-50 transition">
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
