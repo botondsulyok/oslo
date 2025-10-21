@@ -537,8 +537,11 @@
                                 <span class="text-4xl mr-3">${location.icon}</span>
                                 ${location.name}
                             </h2>
-                            <a href="https://www.google.com/maps/search/${encodeURIComponent(location.name)}+Oslo" target="_blank" class="flex-shrink-0 w-full sm:w-auto inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-full shadow-lg text-white bg-[#005f73] hover:bg-[#004d60] transition transform hover:scale-[1.05]">
+                            <a href="https://www.google.com/maps/search/${encodeURIComponent(location.name)}+Oslo" target="_blank" class="flex-shrink-0 w-full sm:w-auto inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-full shadow-lg text-white bg-[#005f73] hover:bg-[#004d60] transition transform hover:scale-[1.05] mb-2 sm:mb-0">
                                 Térképen 🗺️
+                            </a>
+                            <a href="https://www.google.com/search?q=${encodeURIComponent(location.name + ' Oslo')}" target="_blank" class="flex-shrink-0 w-full sm:w-auto inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-full shadow-lg text-white bg-gray-600 hover:bg-gray-700 transition transform hover:scale-[1.05]">
+                                Google Keresés 🔍
                             </a>
                         </div>
                         
